@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cecilia · 观心与观世</title>
+    <!-- 字体引入 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Noto+Serif+SC:wght@300;400;600&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========== 全局变量 & 基础重置 ========== */
+        :root {
+            /* 日间模式配色 */
+            --bg: #F8F5F0;
+            --bg-card: #FFFFFF;
+            --text-primary: #3A3A3A;
+            --text-secondary: #6B6B6B;
+            --accent-blue: #8FAABE;
+            --accent-pink: #E2C7C9;
+            --border: #E8E4DD;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        [data-theme="dark"] {
+            /* 夜间模式配色 */
+            --bg: #2B2B2B;
+            --bg-card: #363636;
+            --text-primary: #E0E0E0;
+            --text-secondary: #A0A0A0;
+            --accent-blue: #A8C0D6;
+            --accent-pink: #D4B5B8;
+            --border: #444444;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.8;
+            font-weight: 300;
+            /* 纸张肌理效果 */
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(143, 170, 190, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(226, 199, 201, 0.03) 0%, transparent 50%);
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* 编辑模式提示样式 */
+        .edit-mode [contenteditable="true"]:hover {
+            outline: 1px dashed var(--accent-blue);
+            outline-offset: 2px;
+            cursor: text;
+        }
+
+        .edit-tip {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-blue);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 999;
+            display: none;
+        }
+
+        .edit-mode .edit-tip {
+            display: block;
+        }
+
+        /* 通用类 */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', 'Noto Serif SC', serif;
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 60px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 1px;
+            background: var(--accent-blue);
+        }
+
+        .handwritten {
+            font-family: 'Dancing Script', cursive;
+            font-weight: 400;
+        }
+
+        /* ========== 导航栏 ========== */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 0;
+            z-index: 100;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+            background: rgba(248, 245, 240, 0.7);
+        }
+
+        [data-theme="dark"] nav {
+            background: rgba(43, 43, 43, 0.7);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.6rem;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent-blue);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+            padding: 4px;
+        }
+
+        .icon-btn:hover {
+            color: var(--accent-blue);
+        }
+
+        .icon-btn.active {
+            color: var(--accent-blue);
+        }
+
+        /* ========== 首页 Hero ========== */
+        #home {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding-top: 80px;
+        }
+
+        .hero-content {
+            text-align: center;
+        }
+
+        .hero-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 5rem;
+            font-weight: 400;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-family: 'Playfair Display', 'Noto Serif SC', serif;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .hero-desc {
+            max-width: 500px;
+            margin: 0 auto 60px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .hero-divider {
+            width: 60px;
+            height: 1px;
+            background: var(--accent-blue);
+            margin: 0 auto 40px;
+            opacity: 0.6;
+        }
+
+        /* 手绘装饰元素 */
+        .deco-cat {
+            position: absolute;
+            bottom: 120px;
+            right: 80px;
+            width: 60px;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .deco-star {
+            position: absolute;
+            top: 180px;
+            left: 100px;
+            width: 20px;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        .scroll-down {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(8px); }
+        }
+
+        /* ========== 关于我 About ========== */
+        #about {
+            padding: 120px 0;
+        }
+
+        .about-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 8px 0;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--accent-blue);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .about-avatar {
+            width: 100%;
+            aspect-ratio: 3/4;
+            background: var(--bg-card);
+            border-radius: 2px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-family: 'Dancing Script', cursive;
+            font-size: 2rem;
+            cursor: pointer;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .about-text h3 {
+            font-family: 'Playfair Display', 'Noto Serif SC', serif;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .about-text p {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .about-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            background: rgba(143, 170, 190, 0.1);
+            color: var(--accent-blue);
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* ========== 作品 Works ========== */
+        #works {
+            padding: 120px 0;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        [data-theme="dark"] #works {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .work-card {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 4px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .work-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        }
+
+        .work-card h4 {
+            font-family: 'Playfair Display', 'Noto Serif SC', serif;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .work-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .work-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            color: var(--accent-blue);
+            background: rgba(143, 170, 190, 0.1);
+            border-radius: 3px;
+            margin-right: 6px;
+        }
+
+        /* ========== 随笔 Journal ========== */
+        #journal {
+            padding: 120px 0;
+        }
+
+        .journal-list {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .journal-item {
+            padding: 30px 0;
+            border-bottom: 1px solid var(--border);
+            transition: opacity 0.3s ease;
+        }
+
+        .journal-item:hover {
+            opacity: 0.8;
+        }
+
+        .journal-date {
+            font-size: 0.8rem;
+            color: var(--accent-blue);
+            margin-bottom: 8px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .journal-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.15rem;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .journal-excerpt {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        /* ========== 私密日记 ========== */
+        #private-journal {
+            padding: 120px 0;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        [data-theme="dark"] #private-journal {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .private-lock {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 40px;
+            background: var(--bg-card);
+            border-radius: 4px;
+            box-shadow: var(--shadow);
+        }
+
+        .private-lock h3 {
+            font-family: 'Playfair Display', 'Noto Serif SC', serif;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .private-lock input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--bg);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .private-lock input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .private-lock button {
+            padding: 8px 24px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: opacity 0.3s;
+        }
+
+        .private-lock button:hover {
+            opacity: 0.9;
+        }
+
+        .private-content {
+            display: none;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .private-content.unlocked {
+            display: block;
+        }
+
+        /* ========== 相册 Gallery ========== */
+        #gallery {
+            padding: 120px 0;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            background: var(--bg-card);
+            border-radius: 2px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+
+        /* 隐藏的文件上传input */
+        .file-input {
+            display: none;
+        }
+
+        /* ========== 页脚 ========== */
+        footer {
+            padding: 60px 0 40px;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-signature {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+
+        .footer-copyright {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* ========== 响应式适配 ========== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 24px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 3.5rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .works-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .deco-cat, .deco-star {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 编辑模式提示 -->
+    <div class="edit-tip">✏️ 编辑模式：点击文字即可修改，完成后点击保存</div>
+
+    <!-- 导航栏 -->
+    <nav id="navbar">
+        <div class="container nav-content">
+            <a href="#home" class="nav-logo editable">Cecilia</a>
+            <ul class="nav-links">
+                <li><a href="#home" class="editable">首页</a></li>
+                <li><a href="#about" class="editable">关于</a></li>
+                <li><a href="#works" class="editable">作品</a></li>
+                <li><a href="#journal" class="editable">随笔</a></li>
+                <li><a href="#private-journal" class="editable">私密</a></li>
+                <li><a href="#gallery" class="editable">影像</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="icon-btn" id="editToggle" title="编辑模式">✏️</button>
+                <button class="icon-btn" id="saveBtn" title="保存修改" style="display:none;">💾</button>
+                <button class="icon-btn" id="resetBtn" title="重置默认" style="display:none;">↺</button>
+                <button class="icon-btn" id="themeToggle" title="切换主题">☾</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 首页 -->
+    <section id="home">
+        <!-- 手绘装饰 -->
+        <svg class="deco-star" viewBox="0 0 24 24" fill="currentColor" style="color: var(--accent-blue)">
+            <path d="M12 2L14.5 9.5H22L16 14.5L18.5 22L12 17.5L5.5 22L8 14.5L2 9.5H9.5L12 2Z"/>
+        </svg>
+        <svg class="deco-cat" viewBox="0 0 100 80" stroke="currentColor" stroke-width="1.5" fill="none" style="color: var(--text-primary)">
+            <path d="M20 60 Q30 30 50 35 Q70 30 80 55 Q85 70 70 72 L30 72 Q15 70 20 60 Z"/>
+            <path d="M30 35 Q25 20 35 25 Q38 30 35 38"/>
+            <path d="M70 35 Q75 20 65 25 Q62 30 65 38"/>
+            <circle cx="40" cy="50" r="2" fill="currentColor"/>
+            <circle cx="60" cy="50" r="2" fill="currentColor"/>
+            <path d="M48 58 Q50 60 52 58"/>
+        </svg>
+
+        <div class="hero-content container">
+            <h1 class="hero-title handwritten editable">Cecilia</h1>
+            <div class="hero-divider"></div>
+            <p class="hero-subtitle editable">观 心 与 观 世</p>
+            <p class="hero-desc editable">
+                心理学与社会学交织的观察者<br>
+                向内探索心智的幽深，向外观察社会的纹理<br>
+                这里是我的数字自留地，盛放思考、文字与生活碎片
+            </p>
+        </div>
+        <div class="scroll-down editable">向下滚动 ↓</div>
+    </section>
+
+    <!-- 关于我 -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title editable">About Me</h2>
+            
+            <div class="about-tabs">
+                <button class="tab-btn active" data-tab="academic">学术版</button>
+                <button class="tab-btn" data-tab="personal">私人版</button>
+            </div>
+
+            <!-- 学术版 -->
+            <div class="tab-pane active" id="academic">
+                <div class="about-content">
+                    <div class="about-avatar" id="avatar-academic" title="点击上传头像">
+                        <span class="handwritten editable">Cecilia</span>
+                    </div>
+                    <div class="about-text">
+                        <h3 class="editable">教育背景</h3>
+                        <p class="editable">社会学硕士 · 心理学学士</p>
+                        <p class="editable">研究方向聚焦于社会心理学、文化与身份认同，关注个体在社会结构中的心智建构与行为逻辑。</p>
+                        
+                        <h3 style="margin-top: 30px;" class="editable">研究兴趣</h3>
+                        <p class="editable">跨文化心理学 · 身份叙事 · 质性研究方法 · 心理健康与社会支持</p>
+                        
+                        <div class="about-tags">
+                            <span class="tag editable">社会学</span>
+                            <span class="tag editable">心理学</span>
+                            <span class="tag editable">质性研究</span>
+                            <span class="tag editable">文化研究</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 私人版 -->
+            <div class="tab-pane" id="personal">
+                <div class="about-content">
+                    <div class="about-avatar" id="avatar-personal" title="点击上传头像">
+                        <span class="handwritten editable">Hello :)</span>
+                    </div>
+                    <div class="about-text">
+                        <h3 class="editable">我是 Cecilia</h3>
+                        <p class="editable">喜欢在文字里安顿自己，在影像里捕捉温柔。相信观察是一种温柔的力量，向内看见自己，向外理解他人。</p>
+                        <p class="editable">热爱阅读、散步、观察城市里的人与风景。习惯用文字记录细碎的思考与梦境，相信平凡日常里也藏着诸多深意。</p>
+                        
+                        <h3 style="margin-top: 30px;" class="editable">喜欢的事物</h3>
+                        <p class="editable">旧书 · 手写字体 · 清晨的光 · 猫 · 慢节奏的旅行</p>
+                        
+                        <div class="about-tags">
+                            <span class="tag editable">阅读</span>
+                            <span class="tag editable">摄影</span>
+                            <span class="tag editable">写诗</span>
+                            <span class="tag editable">治愈系</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 作品 -->
+    <section id="works">
+        <div class="container">
+            <h2 class="section-title editable">Works</h2>
+            <div class="works-grid">
+                <div class="work-card">
+                    <h4 class="editable">城市青年身份叙事研究</h4>
+                    <p class="editable">基于深度访谈的质性研究，探讨流动青年在城市中的身份建构与文化适应过程。</p>
+                    <span class="work-tag editable">社会学</span>
+                    <span class="work-tag editable">质性研究</span>
+                </div>
+                <div class="work-card">
+                    <h4 class="editable">社交媒体与心理健康报告</h4>
+                    <p class="editable">梳理社交平台使用对青年群体自我认知与情绪的影响，结合心理学理论做机制分析。</p>
+                    <span class="work-tag editable">心理学</span>
+                    <span class="work-tag editable">报告</span>
+                </div>
+                <div class="work-card">
+                    <h4 class="editable">读书笔记 · 文化心理学</h4>
+                    <p class="editable">关于文化与心智、集体主义与个体主义的经典文献阅读札记与思考整理。</p>
+                    <span class="work-tag editable">读书</span>
+                    <span class="work-tag editable">理论</span>
+                </div>
+                <div class="work-card">
+                    <h4 class="editable">原创文字集</h4>
+                    <p class="editable">诗歌、随笔与短篇创作，关于情绪、记忆与日常的微观书写。</p>
+                    <span class="work-tag editable">创作</span>
+                    <span class="work-tag editable">文字</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 随笔 -->
+    <section id="journal">
+        <div class="container">
+            <h2 class="section-title editable">Journal</h2>
+            <div class="journal-list">
+                <div class="journal-item">
+                    <div class="journal-date editable">September 2026</div>
+                    <h4 class="journal-title editable">八月的末尾，与平静共处</h4>
+                    <p class="journal-excerpt editable">夏天慢慢退场的时候，反而更容易获得内心的秩序。大概是因为热烈退去后，更能听见自己的呼吸...</p>
+                </div>
+                <div class="journal-item">
+                    <div class="journal-date editable">August 2026</div>
+                    <h4 class="journal-title editable">关于「观察」这件事</h4>
+                    <p class="journal-excerpt editable">社会学训练给我最好的礼物，是学会带着距离感去观察生活。不是抽离，而是在投入的同时，保留一双旁观的眼睛...</p>
+                </div>
+                <div class="journal-item">
+                    <div class="journal-date editable">July 2026</div>
+                    <h4 class="journal-title editable">梦境记录：海边的旧房子</h4>
+                    <p class="journal-excerpt editable">又梦见那栋海边的房子，木质楼梯踩上去会发出声响。窗外是雾蓝色的海，没有声音，只有风穿过走廊...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 私密日记 -->
+    <section id="private-journal">
+        <div class="container">
+            <h2 class="section-title editable">Private Journal</h2>
+            
+            <div class="private-lock" id="privateLock">
+                <h3 class="editable">🔒 私密日记</h3>
+                <input type="password" id="privatePassword" placeholder="请输入密码">
+                <button onclick="unlockPrivate()">解锁查看</button>
+            </div>
+
+            <div class="private-content" id="privateContent">
+                <div class="journal-list">
+                    <div class="journal-item">
+                        <div class="journal-date editable">私密 · 2026.09.10</div>
+                        <h4 class="journal-title editable">只写给自己的话</h4>
+                        <p class="journal-excerpt editable">这里是只有你能看见的地方，可以写下所有不想公开的情绪、思考和碎念。</p>
+                    </div>
+                    <div class="journal-item">
+                        <div class="journal-date editable">私密 · 2026.08.25</div>
+                        <h4 class="journal-title editable">梦境碎片</h4>
+                        <p class="journal-excerpt editable">记录那些醒来还清晰的梦境，时间久了会变成另一个平行世界的记忆。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 相册 -->
+    <section id="gallery">
+        <div class="container">
+            <h2 class="section-title editable">Gallery</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item" data-index="0" title="点击上传图片"><span class="editable">清晨的窗</span></div>
+                <div class="gallery-item" data-index="1" title="点击上传图片"><span class="editable">街角的猫</span></div>
+                <div class="gallery-item" data-index="2" title="点击上传图片"><span class="editable">旧书店</span></div>
+                <div class="gallery-item" data-index="3" title="点击上传图片"><span class="editable">雨后街道</span></div>
+                <div class="gallery-item" data-index="4" title="点击上传图片"><span class="editable">云的形状</span></div>
+                <div class="gallery-item" data-index="5" title="点击上传图片"><span class="editable">日落时分</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 隐藏的文件上传控件 -->
+    <input type="file" class="file-input" id="fileInput" accept="image/*">
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-signature handwritten editable">— Cecilia</div>
+            <p class="footer-copyright editable">© 2026 Cecilia · 观心与观世</p>
+        </div>
+    </footer>
+
+    <script>
+        // ========== 全局变量 ==========
+        const STORAGE_KEY = 'cecilia_website_data';
+        const DEFAULT_PRIVATE_PASSWORD = 'cecilia2026'; // 默认私密日记密码
+        let currentUploadTarget = null;
+
+        // ========== 日/夜模式切换 ==========
+        const themeToggle = document.getElementById('themeToggle');
+        const rootElement = document.documentElement;
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        rootElement.setAttribute('data-theme', savedTheme);
+        themeToggle.textContent = savedTheme === 'dark' ? '☀' : '☾';
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = rootElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            rootElement.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '☀' : '☾';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // ========== 导航栏滚动效果 ==========
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.05)';
+            } else {
+                navbar.style.boxShadow = 'none';
+            }
+        });
+
+        // ========== About 选项卡切换 ==========
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabPanes.forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                const tabId = btn.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // ========== 平滑滚动 ==========
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // ========== 编辑模式核心功能 ==========
+        const editToggle = document.getElementById('editToggle');
+        const saveBtn = document.getElementById('saveBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const editableElements = document.querySelectorAll('.editable');
+        let isEditMode = false;
+
+        // 切换编辑模式
+        editToggle.addEventListener('click', () => {
+            isEditMode = !isEditMode;
+            document.body.classList.toggle('edit-mode', isEditMode);
+            editToggle.classList.toggle('active', isEditMode);
+            saveBtn.style.display = isEditMode ? 'block' : 'none';
+            resetBtn.style.display = isEditMode ? 'block' : 'none';
+            
+            editableElements.forEach(el => {
+                el.setAttribute('contenteditable', isEditMode);
+            });
+        });
+
+        // 保存修改
+        saveBtn.addEventListener('click', () => {
+            const data = {
+                texts: {},
+                images: {},
+                privatePassword: localStorage.getItem('private_password') || DEFAULT_PRIVATE_PASSWORD
+            };
+
+            // 保存所有文本
+            editableElements.forEach((el, index) => {
+                data.texts[`text_${index}`] = el.innerHTML;
+            });
+
+            // 保存所有图片
+            document.querySelectorAll('.gallery-item').forEach((item, index) => {
+                if (item.style.backgroundImage) {
+                    data.images[`gallery_${index}`] = item.style.backgroundImage;
+                }
+            });
+
+            // 保存头像
+            const avatarAcademic = document.getElementById('avatar-academic');
+            const avatarPersonal = document.getElementById('avatar-personal');
+            if (avatarAcademic.style.backgroundImage) {
+                data.images['avatar_academic'] = avatarAcademic.style.backgroundImage;
+            }
+            if (avatarPersonal.style.backgroundImage) {
+                data.images['avatar_personal'] = avatarPersonal.style.backgroundImage;
+            }
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            alert('✅ 保存成功！修改已永久保存在本地浏览器');
+        });
+
+        // 重置为默认
+        resetBtn.addEventListener('click', () => {
+            if (confirm('确定要重置所有内容吗？将恢复到初始默认状态。')) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            }
+        });
+
+        // 加载保存的内容
+        function loadSavedData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) return;
+
+            try {
+                const data = JSON.parse(saved);
+                
+                // 加载文本
+                if (data.texts) {
+                    editableElements.forEach((el, index) => {
+                        const key = `text_${index}`;
+                        if (data.texts[key]) {
+                            el.innerHTML = data.texts[key];
+                        }
+                    });
+                }
+
+                // 加载图片
+                if (data.images) {
+                    document.querySelectorAll('.gallery-item').forEach((item, index) => {
+                        const key = `gallery_${index}`;
+                        if (data.images[key]) {
+                            item.style.backgroundImage = data.images[key];
+                            item.querySelector('span').style.display = 'none';
+                        }
+                    });
+
+                    const avatarAcademic = document.getElementById('avatar-academic');
+                    const avatarPersonal = document.getElementById('avatar-personal');
+                    if (data.images['avatar_academic']) {
+                        avatarAcademic.style.backgroundImage = data.images['avatar_academic'];
+                        avatarAcademic.querySelector('span').style.display = 'none';
+                    }
+                    if (data.images['avatar_personal']) {
+                        avatarPersonal.style.backgroundImage = data.images['avatar_personal'];
+                        avatarPersonal.querySelector('span').style.display = 'none';
+                    }
+                }
+            } catch (e) {
+                console.error('加载数据失败', e);
+            }
+        }
+
+        // ========== 图片上传功能 ==========
+        const fileInput = document.getElementById('fileInput');
+
+        // 头像上传
+        document.getElementById('avatar-academic').addEventListener('click', () => {
+            if (!isEditMode) return;
+            currentUploadTarget = 'avatar-academic';
+            fileInput.click();
+        });
+
+        document.getElementById('avatar-personal').addEventListener('click', () => {
+            if (!isEditMode) return;
+            currentUploadTarget = 'avatar-personal';
+            fileInput.click();
+        });
+
+        // 相册上传
+        document.querySelectorAll('.gallery-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (!isEditMode) return;
+                currentUploadTarget = `gallery-${item.dataset.index}`;
+                fileInput.click();
+            });
+        });
+
+        // 处理文件选择
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file || !currentUploadTarget) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const imgUrl = `url(${event.target.result})`;
+                
+                if (currentUploadTarget.startsWith('gallery')) {
+                    const index = currentUploadTarget.split('-')[1];
+                    const item = document.querySelector(`.gallery-item[data-index="${index}"]`);
+                    item.style.backgroundImage = imgUrl;
+                    item.querySelector('span').style.display = 'none';
+                } else if (currentUploadTarget === 'avatar-academic') {
+                    const avatar = document.getElementById('avatar-academic');
+                    avatar.style.backgroundImage = imgUrl;
+                    avatar.querySelector('span').style.display = 'none';
+                } else if (currentUploadTarget === 'avatar-personal') {
+                    const avatar = document.getElementById('avatar-personal');
+                    avatar.style.backgroundImage = imgUrl;
+                    avatar.querySelector('span').style.display = 'none';
+                }
+
+                fileInput.value = '';
+                currentUploadTarget = null;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // ========== 私密日记功能 ==========
+        function unlockPrivate() {
+            const input = document.getElementById('privatePassword').value;
+            const savedPassword = localStorage.getItem('private_password') || DEFAULT_PRIVATE_PASSWORD;
+            
+            if (input === savedPassword) {
+                document.getElementById('privateLock').style.display = 'none';
+                document.getElementById('privateContent').classList.add('unlocked');
+            } else {
+                alert('密码错误，请重试');
+            }
+        }
+
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSavedData();
+        });
+    </script>
+</body>
+</html>
