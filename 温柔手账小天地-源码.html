@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cecilia · 温柔手账小天地</title>
+    <!-- 谷歌字体：手写花体、衬线、中文 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600&family=Quicksand:wght@300;400;500&family=Noto+Serif+SC:wght@300;400&family=Noto+Sans+SC:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* 奶油手账 日间配色：低饱和粉蓝 */
+            --cream-bg: #fcf7f4;
+            --paper: #fffbf8;
+            --text-main: #494444;
+            --text-light: #8c8484;
+            --soft-blue: #b8cde0;
+            --soft-pink: #e9d2d6;
+            --border-line: #e9e0dc;
+            --shadow-soft: 0 4px 16px rgba(180,160,160,0.08);
+        }
+        [data-theme="dark"] {
+            /* 暗模式，保留奶油粉蓝调性 */
+            --cream-bg: #343032;
+            --paper: #423d3f;
+            --text-main: #e9e3e3;
+            --text-light: #b4a9a9;
+            --soft-blue: #98b2cc;
+            --soft-pink: #d8b9be;
+            --border-line: #585052;
+            --shadow-soft: 0 4px 16px rgba(0,0,0,0.25);
+        }
+        * {margin:0;padding:0;box-sizing:border-box;}
+        html {scroll-behavior:smooth;}
+        body {
+            font-family: 'Noto Sans SC','Quicksand',sans-serif;
+            background-color: var(--cream-bg);
+            color: var(--text-main);
+            line-height:1.75;
+            font-weight:300;
+            /* 纸张肌理背景 */
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23e2d8d4' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+        .handwritten {font-family: 'Dancing Script',cursive;font-weight:400;}
+        .edit-mode [contenteditable="true"]:hover {outline:1px dashed var(--soft-blue);outline-offset:3px;cursor:text;}
+        .edit-tip {
+            position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+            background:var(--soft-blue);color:#fff;padding:8px 22px;border-radius:99px;
+            font-size:0.85rem;z-index:999;display:none;
+        }
+        .edit-mode .edit-tip {display:block;}
+        .container {max-width:980px;margin:0 auto;padding:0 32px;}
+        .section-title {
+            font-family:'Noto Serif SC',serif;font-size:1.9rem;font-weight:400;text-align:center;
+            margin-bottom:52px;position:relative;
+        }
+        .section-title::after {
+            content:"";position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
+            width:48px;height:1px;background:var(--soft-pink);
+        }
+        /* Nav */
+        nav {
+            position:fixed;top:0;width:100%;z-index:100;padding:20px 0;
+            backdrop-filter:blur(10px);background:rgba(252,247,244,0.72);
+            transition:all 0.3s;
+        }
+        [data-theme="dark"] nav {background:rgba(52,48,50,0.72);}
+        .nav-wrap {display:flex;justify-content:space-between;align-items:center;}
+        .nav-logo {font-family:'Dancing Script',cursive;font-size:1.7rem;color:var(--text-main);text-decoration:none;}
+        .nav-links {display:flex;gap:30px;list-style:none;}
+        .nav-links a {color:var(--text-light);text-decoration:none;font-size:0.9rem;transition:color 0.3s;position:relative;}
+        .nav-links a:hover {color:var(--soft-pink);}
+        .nav-links a::after {content:"";position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--soft-pink);transition:width 0.3s;}
+        .nav-links a:hover::after {width:100%;}
+        .nav-actions {display:flex;gap:14px;align-items:center;}
+        .icon-btn {background:none;border:none;color:var(--text-light);cursor:pointer;font-size:1.1rem;padding:4px;transition:color 0.3s;}
+        .icon-btn:hover {color:var(--soft-pink);}
+        .icon-btn.active {color:var(--soft-pink);}
+        /* Hero首页 手账手绘区域 */
+        #home {
+            min-height:100vh;display:flex;align-items:center;justify-content:center;
+            position:relative;padding-top:70px;
+        }
+        .hero-card {
+            background:var(--paper);box-shadow:var(--shadow-soft);border-radius:18px;
+            padding:60px 48px;max-width:680px;text-align:center;
+            border:1px solid var(--border-line);position:relative;
+        }
+        /* 手绘小猫装饰svg */
+        .hand-doodle-cat {
+            position:absolute;right:-24px;bottom:-16px;width:90px;opacity:0.22;pointer-events:none;
+        }
+        .hand-doodle-star {
+            position:absolute;left:-16px;top:20px;width:42px;opacity:0.24;pointer-events:none;
+        }
+        .hero-title {font-family:'Dancing Script',cursive;font-size:4.6rem;margin-bottom:12px;color:var(--text-main);line-height:1.1;}
+        .hero-divider {width:70px;height:1px;background:var(--soft-pink);margin:18px auto 24px;}
+        .hero-subtitle {font-size:1.1rem;color:var(--text-light);letter-spacing:1px;margin-bottom:22px;}
+        .hero-desc {color:var(--text-light);font-size:0.96rem;line-height:1.8;}
+        .scroll-down {position:absolute;bottom:36px;left:50%;transform:translateX(-50%);color:var(--text-light);font-size:0.82rem;animation:bounce 2s infinite;}
+        @keyframes bounce {0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(7px);}}
+        /* About */
+        #about {padding:110px 0;}
+        .tab-buttons {display:flex;justify-content:center;gap:36px;margin-bottom:40px;}
+        .tab-btn {border:none;background:none;color:var(--text-light);font-family:'Noto Serif SC',serif;font-size:1rem;padding:6px 0;cursor:pointer;position:relative;}
+        .tab-btn.active {color:var(--text-main);}
+        .tab-btn.active::after {content:"";position:absolute;bottom:0;left:0;width:100%;height:1px;background:var(--soft-pink);}
+        .about-container {display:grid;grid-template-columns:1fr 2fr;gap:50px;align-items:start;}
+        .avatar-box {
+            width:100%;aspect-ratio:3/4;background:var(--paper);border-radius:14px;
+            box-shadow:var(--shadow-soft);border:1px solid var(--border-line);
+            display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;
+            background-size:cover;background-position:center;
+        }
+        .avatar-box span {font-family:'Dancing Script',cursive;font-size:2rem;color:var(--text-light);}
+        .text-block h3 {font-size:1.3rem;margin-bottom:16px;font-family:'Noto Serif SC',serif;}
+        .text-block p {color:var(--text-light);margin-bottom:14px;font-size:0.95rem;}
+        .tag-group {display:flex;flex-wrap:wrap;gap:9px;margin-top:26px;}
+        .tag {padding:4px 12px;background:rgba(233,210,214,0.25);color:#866b70;border-radius:99px;font-size:0.78rem;}
+        .tab-pane {display:none;}
+        .tab-pane.active {display:block;}
+        /* Works */
+        #works {padding:110px 0;background:rgba(255,255,255,0.2);}
+        [data-theme="dark"] #works {background:rgba(0,0,0,0.08);}
+        .works-grid {display:grid;grid-template-columns:1fr 1fr;gap:26px;}
+        .work-card {
+            background:var(--paper);border:1px solid var(--border-line);border-radius:14px;
+            padding:28px;box-shadow:var(--shadow-soft);transition:transform 0.3s ease;
+        }
+        .work-card:hover {transform:translateY(-4px);}
+        .work-card h4 {font-family:'Noto Serif SC',serif;font-size:1.15rem;margin-bottom:10px;}
+        .work-card p {color:var(--text-light);font-size:0.9rem;margin-bottom:14px;}
+        .work-tag {display:inline-block;padding:2px 7px;font-size:0.74rem;background:rgba(184,205,224,0.25);color:#5b778c;border-radius:4px;margin-right:5px;}
+        /* Journal随笔 */
+        #journal {padding:110px 0;}
+        .journal-list {max-width:720px;margin:0 auto;}
+        .journal-item {padding:26px 0;border-bottom:1px dashed var(--border-line);}
+        .journal-date {font-size:0.8rem;color:var(--soft-blue);margin-bottom:6px;font-family:'Quicksand';}
+        .journal-title {font-family:'Noto Serif SC',serif;font-size:1.12rem;margin-bottom:8px;cursor:pointer;}
+        .journal-excerpt {color:var(--text-light);font-size:0.9rem;}
+        /* Private私密日记 */
+        #private-journal {padding:110px 0;background:rgba(255,255,255,0.2);}
+        [data-theme="dark"] #private-journal {background:rgba(0,0,0,0.08);}
+        .private-lock-box {
+            max-width:420px;margin:0 auto;text-align:center;padding:36px;background:var(--paper);
+            border-radius:14px;border:1px solid var(--border-line);box-shadow:var(--shadow-soft);
+        }
+        .private-lock-box h3 {font-family:'Noto Serif SC',serif;font-size:1.25rem;margin-bottom:18px;}
+        .private-lock-box input {
+            width:100%;padding:10px 14px;border:1px solid var(--border-line);border-radius:10px;
+            background:var(--cream-bg);color:var(--text-main);margin-bottom:14px;outline:none;
+        }
+        .private-lock-box input:focus {border-color:var(--soft-pink);}
+        .private-lock-box button {
+            padding:8px 22px;background:var(--soft-pink);color:#494444;border:none;border-radius:10px;
+            cursor:pointer;transition:opacity 0.3s;
+        }
+        .private-lock-box button:hover {opacity:0.86;}
+        .private-content {display:none;max-width:720px;margin:0 auto;}
+        .private-content.unlocked {display:block;}
+        /* Gallery相册 手账拼贴网格 */
+        #gallery {padding:110px 0;}
+        .gallery-grid {display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+        .gallery-item {
+            aspect-ratio:1;background:var(--paper);border:1px solid var(--border-line);border-radius:12px;
+            box-shadow:var(--shadow-soft);display:flex;align-items:center;justify-content:center;
+            color:var(--text-light);font-size:0.84rem;cursor:pointer;overflow:hidden;
+            background-size:cover;background-position:center;transition:transform 0.3s;
+        }
+        .gallery-item:hover {transform:scale(1.025);}
+        .file-input {display:none;}
+        /* Footer */
+        footer {padding:54px 0 32px;text-align:center;border-top:1px dashed var(--border-line);}
+        .footer-signature {font-family:'Dancing Script',cursive;font-size:1.4rem;margin-bottom:8px;}
+        .copyright {font-size:0.8rem;color:var(--text-light);}
+        /* 移动端适配 */
+        @media(max-width:768px){
+            .container {padding:0 20px;}
+            .nav-links {display:none;}
+            .hero-title {font-size:3.2rem;}
+            .hero-card {padding:40px 24px;}
+            .about-container {grid-template-columns:1fr;gap:34px;}
+            .works-grid {grid-template-columns:1fr;}
+            .gallery-grid {grid-template-columns:repeat(2,1fr);}
+            .hand-doodle-cat,.hand-doodle-star {display:none;}
+        }
+    </style>
+</head>
+<body>
+    <div class="edit-tip">✏️ 编辑模式｜点击文字修改，完成后点保存</div>
+    <nav id="navbar">
+        <div class="container nav-wrap">
+            <a href="#home" class="nav-logo editable">Cecilia</a>
+            <ul class="nav-links">
+                <li><a href="#home" class="editable">首页</a></li>
+                <li><a href="#about" class="editable">关于我</a></li>
+                <li><a href="#works" class="editable">作品</a></li>
+                <li><a href="#journal" class="editable">随笔</a></li>
+                <li><a href="#private-journal" class="editable">私密日记</a></li>
+                <li><a href="#gallery" class="editable">影像相册</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="icon-btn" id="editToggle" title="开启编辑模式">✏️</button>
+                <button class="icon-btn" id="saveBtn" title="保存本地" style="display:none;">💾</button>
+                <button class="icon-btn" id="resetBtn" title="重置全部" style="display:none;">↺</button>
+                <button class="icon-btn" id="themeToggle" title="切换明暗">☾</button>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home">
+        <div class="hero-card container">
+            <!-- 手绘线稿装饰 -->
+            <svg class="hand-doodle-star" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.2" style="color:var(--soft-pink)">
+                <path d="M15 2L18 11H28L20 17L23 27L15 21L7 27L10 17L2 11H12L15 2"/>
+            </svg>
+            <svg class="hand-doodle-cat" viewBox="0 0 100 85" fill="none" stroke="currentColor" stroke-width="1.4" style="color:var(--soft-blue)">
+                <path d="M18 62 Q32 28 50 34 Q72 28 82 56 Q86 72 70 74 L30 74 Q14 72 18 62Z"/>
+                <path d="M30 34 Q24 18 36 24 Q39 30 36 39"/>
+                <path d="M70 34 Q76 18 64 24 Q61 30 64 39"/>
+                <circle cx="40" cy="51" r="2" fill="currentColor"/>
+                <circle cx="60" cy="51" r="2" fill="currentColor"/>
+                <path d="M47 59 Q50 62 53 59"/>
+            </svg>
+            <h1 class="hero-title handwritten editable">Cecilia</h1>
+            <div class="hero-divider"></div>
+            <p class="hero-subtitle editable">温柔手账小天地</p>
+            <p class="hero-desc editable">
+                向内观心，向外观世。<br>
+                这里是我的数字手账自留地，存放文字、照片、随笔与细碎思考。
+            </p>
+        </div>
+        <div class="scroll-down editable">向下滑动继续浏览 ↓</div>
+    </section>
+
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title editable">About Me</h2>
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="academic">学术版本</button>
+                <button class="tab-btn" data-tab="personal">私人版本</button>
+            </div>
+            <div class="tab-pane active" id="academic">
+                <div class="about-container">
+                    <div class="avatar-box" id="avatar-academic" title="编辑模式点击上传头像">
+                        <span class="handwritten editable">Cecilia</span>
+                    </div>
+                    <div class="text-block">
+                        <h3 class="editable">教育背景</h3>
+                        <p class="editable">社会学硕士 · 心理学学士</p>
+                        <p class="editable">研究方向聚焦社会心理学、身份叙事、质性研究，探索个体心智与社会结构之间的联结。</p>
+                        <h3 style="margin-top:28px" class="editable">研究兴趣</h3>
+                        <p class="editable">跨文化心理学｜身份建构｜质性研究｜青年心理健康</p>
+                        <div class="tag-group">
+                            <span class="tag editable">社会学</span>
+                            <span class="tag editable">心理学</span>
+                            <span class="tag editable">质性研究</span>
+                            <span class="tag editable">文化研究</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="personal">
+                <div class="about-container">
+                    <div class="avatar-box" id="avatar-personal" title="编辑模式点击上传头像">
+                        <span class="handwritten editable">Hi :)</span>
+                    </div>
+                    <div class="text-block">
+                        <h3 class="editable">我是 Cecilia</h3>
+                        <p class="editable">喜欢用文字记录情绪，在镜头捕捉温柔瞬间。相信观察是一种柔软的力量。</p>
+                        <p class="editable">热爱散步、阅读、收集碎片式的灵感，在平凡日常里寻找微小的浪漫。</p>
+                        <h3 style="margin-top:28px" class="editable">偏爱事物</h3>
+                        <p class="editable">旧书、手写字体、清晨柔光、猫咪、慢旅行</p>
+                        <div class="tag-group">
+                            <span class="tag editable">阅读</span>
+                            <span class="tag editable">摄影</span>
+                            <span class="tag editable">文字创作</span>
+                            <span class="tag editable">手账</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="works">
+        <div class="container">
+            <h2 class="section-title editable">Works</h2>
+            <div class="works-grid">
+                <div class="work-card">
+                    <h4 class="editable">城市青年身份叙事研究</h4>
+                    <p class="editable">基于深度访谈的质性研究，探讨流动青年在城市中的身份建构与文化适应。</p>
+                    <span class="work-tag editable">社会学</span>
+                    <span class="work-tag editable">质性研究</span>
+                </div>
+                <div class="work-card">
+                    <h4 class="editable">社交媒体与青年心理健康报告</h4>
+                    <p class="editable">分析社交平台使用对自我认知、情绪状态的影响，结合心理学理论解析内在机制。</p>
+                    <span class="work-tag editable">心理学</span>
+                    <span class="work-tag editable">研究报告</span>
+                </div>
+                <div class="work-card">
+                    <h4 class="editable">文化心理学读书笔记</h4>
+                    <p class="editable">整理文化与心智、集体与个体认知相关经典文献，记录阅读思考。</p>
+                    <span class="work-tag editable">读书札记</span>
+                    <span class="work-tag editable">理论</span>
+                </div>
+                <div class="work-card">
+                    <h4 class="editable">原创随笔与短诗合集</h4>
+                    <p class="editable">关于梦境、情绪、时间与日常的微观文字创作。</p>
+                    <span class="work-tag editable">文学创作</span>
+                    <span class="work-tag editable">随笔</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="journal">
+        <div class="container">
+            <h2 class="section-title editable">Journal</h2>
+            <div class="journal-list">
+                <div class="journal-item">
+                    <div class="journal-date editable">September 2026</div>
+                    <h4 class="journal-title editable">八月尾声，与平静共处</h4>
+                    <p class="journal-excerpt editable">夏意慢慢褪去的时候，内心更容易建立秩序。热烈退散之后，才听得见自己的呼吸。</p>
+                </div>
+                <div class="journal-item">
+                    <div class="journal-date editable">August 2026</div>
+                    <h4 class="journal-title editable">作为观察者的日常</h4>
+                    <p class="journal-excerpt editable">社会学训练留给我最好的礼物，是学会带着距离去观察生活，不是抽离，而是投入同时保留旁观的眼睛。</p>
+                </div>
+                <div class="journal-item">
+                    <div class="journal-date editable">July 2026</div>
+                    <h4 class="journal-title editable">梦境记录：海边旧屋</h4>
+                    <p class="journal-excerpt editable">又梦见那座海边木屋，木楼梯踩上去轻轻作响。窗外是雾蓝色的海，安静，只有风穿过长廊。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="private-journal">
+        <div class="container">
+            <h2 class="section-title editable">Private Journal</h2>
+            <div class="private-lock-box" id="privateLock">
+                <h3 class="editable">🔒 私密手账</h3>
+                <input type="password" id="privatePassword" placeholder="输入密码解锁">
+                <button onclick="unlockPrivate()">解锁查看</button>
+            </div>
+            <div class="private-content" id="privateContent">
+                <div class="journal-list">
+                    <div class="journal-item">
+                        <div class="journal-date editable">私密 · 2026.09.10</div>
+                        <h4 class="journal-title editable">只写给自己的话</h4>
+                        <p class="journal-excerpt editable">这是只属于你的空间，存放所有不想对外展示的情绪、思绪与碎念。</p>
+                    </div>
+                    <div class="journal-item">
+                        <div class="journal-date editable">私密 · 2026.08.25</div>
+                        <h4 class="journal-title editable">梦境碎片存档</h4>
+                        <p class="journal-excerpt editable">把醒来依旧清晰的梦境记录下来，时间久了就成为平行世界的记忆。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery">
+        <div class="container">
+            <h2 class="section-title editable">Gallery</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item" data-index="0" title="编辑模式点击上传图片"><span class="editable">清晨窗光</span></div>
+                <div class="gallery-item" data-index="1" title="编辑模式点击上传图片"><span class="editable">街角小猫</span></div>
+                <div class="gallery-item" data-index="2" title="编辑模式点击上传图片"><span class="editable">旧书店</span></div>
+                <div class="gallery-item" data-index="3" title="编辑模式点击上传图片"><span class="editable">雨后街道</span></div>
+                <div class="gallery-item" data-index="4" title="编辑模式点击上传图片"><span class="editable">云的模样</span></div>
+                <div class="gallery-item" data-index="5" title="编辑模式点击上传图片"><span class="editable">日落时分</span></div>
+            </div>
+        </div>
+    </section>
+    <input type="file" class="file-input" id="fileInput" accept="image/*">
+
+    <footer>
+        <div class="container">
+            <div class="footer-signature handwritten editable">— Cecilia</div>
+            <p class="copyright editable">© 2026 Cecilia · 温柔手账小天地</p>
+        </div>
+    </footer>
+
+    <script>
+        const STORAGE_KEY = 'handnote_cecilia_site';
+        const DEFAULT_PWD = 'cecilia2026';
+        let uploadTarget = null;
+        // 明暗主题
+        const themeBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        root.setAttribute('data-theme', savedTheme);
+        themeBtn.textContent = savedTheme === 'dark' ? '☀' : '☾';
+        themeBtn.onclick = ()=>{
+            const t = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme',t);
+            themeBtn.textContent = t==='dark'?'☀':'☾';
+            localStorage.setItem('theme',t);
+        }
+        // 导航阴影
+        const nav = document.getElementById('navbar');
+        window.addEventListener('scroll',()=>{
+            nav.style.boxShadow = window.scrollY>50 ? '0 2px 18px rgba(160,140,140,0.08)' : 'none';
+        })
+        // Tab切换
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+        tabBtns.forEach(b=>b.onclick=()=>{
+            tabBtns.forEach(x=>x.classList.remove('active'));
+            tabPanes.forEach(x=>x.classList.remove('active'));
+            b.classList.add('active');
+            document.getElementById(b.dataset.tab).classList.add('active');
+        })
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(a=>{
+            a.onclick = e=>{
+                e.preventDefault();
+                const target = document.querySelector(a.getAttribute('href'));
+                if(target) window.scrollTo({top:target.offsetTop -80,behavior:'smooth'});
+            }
+        })
+        // 编辑模式
+        const editToggle = document.getElementById('editToggle');
+        const saveBtn = document.getElementById('saveBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const editableItems = document.querySelectorAll('.editable');
+        let editOn = false;
+        editToggle.onclick = ()=>{
+            editOn = !editOn;
+            document.body.classList.toggle('edit-mode',editOn);
+            editToggle.classList.toggle('active',editOn);
+            saveBtn.style.display = editOn ? 'block':'none';
+            resetBtn.style.display = editOn ? 'block':'none';
+            editableItems.forEach(el=>el.contentEditable = editOn);
+        }
+        // 保存数据
+        saveBtn.onclick = ()=>{
+            const data = {text:{},img:{}};
+            editableItems.forEach((el,i)=> data.text[`t${i}`] = el.innerHTML);
+            document.querySelectorAll('.gallery-item').forEach((item,i)=>{
+                if(item.style.backgroundImage) data.img[`g${i}`]=item.style.backgroundImage;
+            })
+            const avaA = document.getElementById('avatar-academic');
+            const avaP = document.getElementById('avatar-personal');
+            if(avaA.style.backgroundImage) data.img.avaA = avaA.style.backgroundImage;
+            if(avaP.style.backgroundImage) data.img.avaP = avaP.style.backgroundImage;
+            localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+            alert('✅ 保存成功！全部内容保存在浏览器本地');
+        }
+        // 重置
+        resetBtn.onclick = ()=>{
+            if(confirm('确认重置，恢复网站初始状态？已保存的修改会清除')){
+                localStorage.removeItem(STORAGE_KEY);location.reload();
+            }
+        }
+        // 加载本地存档
+        function loadSaved(){
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if(!raw) return;
+            try{
+                const d = JSON.parse(raw);
+                if(d.text) editableItems.forEach((el,i)=>{if(d.text[`t${i}`]) el.innerHTML = d.text[`t${i}`];})
+                if(d.img){
+                    document.querySelectorAll('.gallery-item').forEach((item,i)=>{
+                        if(d.img[`g${i}`]){
+                            item.style.backgroundImage = d.img[`g${i}`];
+                            item.querySelector('span').style.display='none';
+                        }
+                    })
+                    if(d.img.avaA){
+                        const avaA = document.getElementById('avatar-academic');
+                        avaA.style.backgroundImage = d.img.avaA;
+                        avaA.querySelector('span').style.display='none';
+                    }
+                    if(d.img.avaP){
+                        const avaP = document.getElementById('avatar-personal');
+                        avaP.style.backgroundImage = d.img.avaP;
+                        avaP.querySelector('span').style.display='none';
+                    }
+                }
+            }catch(e){console.log('加载失败',e)}
+        }
+        // 图片上传
+        const fileInput = document.getElementById('fileInput');
+        document.getElementById('avatar-academic').onclick = ()=>{if(!editOn)return;uploadTarget='avaA';fileInput.click();}
+        document.getElementById('avatar-personal').onclick = ()=>{if(!editOn)return;uploadTarget='avaP';fileInput.click();}
+        document.querySelectorAll('.gallery-item').forEach(item=>{
+            item.onclick = ()=>{
+                if(!editOn) return;
+                uploadTarget = `g${item.dataset.index}`;
+                fileInput.click();
+            }
+        })
+        fileInput.onchange = e=>{
+            const f = e.target.files[0];
+            if(!f||!uploadTarget) return;
+            const reader = new FileReader();
+            reader.onload = ev=>{
+                const bgImg = `url(${ev.target.result})`;
+                if(uploadTarget.startsWith('g')){
+                    const idx = uploadTarget.replace('g','');
+                    const dom = document.querySelector(`.gallery-item[data-index="${idx}"]`);
+                    dom.style.backgroundImage = bgImg;
+                    dom.querySelector('span').style.display='none';
+                }else if(uploadTarget==='avaA'){
+                    const ava = document.getElementById('avatar-academic');
+                    ava.style.backgroundImage = bgImg;
+                    ava.querySelector('span').style.display='none';
+                }else if(uploadTarget==='avaP'){
+                    const ava = document.getElementById('avatar-personal');
+                    ava.style.backgroundImage = bgImg;
+                    ava.querySelector('span').style.display='none';
+                }
+                fileInput.value = '';uploadTarget=null;
+            }
+            reader.readAsDataURL(f);
+        }
+        // 私密日记解锁
+        function unlockPrivate(){
+            const inputVal = document.getElementById('privatePassword').value;
+            const pwd = localStorage.getItem('private_pwd') || DEFAULT_PWD;
+            if(inputVal === pwd){
+                document.getElementById('privateLock').style.display = 'none';
+                document.getElementById('privateContent').classList.add('unlocked');
+            }else alert('密码错误，请重试');
+        }
+        window.onload = loadSaved;
+    </script>
+</body>
+</html>
